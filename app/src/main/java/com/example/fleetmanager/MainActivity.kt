@@ -58,7 +58,7 @@ fun DriverDetails(modifier:Modifier=Modifier){
             }
 
         }) {
-            Text(text = "get details")
+            Text(text = "Download")
         }
     }
 }
