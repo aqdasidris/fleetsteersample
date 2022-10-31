@@ -5,16 +5,13 @@ import android.os.Bundle
 import android.util.Log
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
-import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.material.Button
-import androidx.compose.material.MaterialTheme
-import androidx.compose.material.Surface
-import androidx.compose.material.Text
+import androidx.compose.foundation.layout.*
+import androidx.compose.material.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.unit.dp
+import com.example.fleetmanager.domain.JobData
 import com.example.fleetmanager.repository.JobRepository
 import com.example.fleetmanager.repository.database.*
 import com.example.fleetmanager.repository.network.IJobRemoteDataStore
@@ -26,7 +23,7 @@ import kotlinx.coroutines.launch
 
 
 class MainActivity : ComponentActivity() {
-    private val TAG="MainActivity"
+    private val TAG = "MainActivity"
 
     //var repo:JobRepository?=null
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -39,22 +36,35 @@ class MainActivity : ComponentActivity() {
                     color = MaterialTheme.colors.background
                 ) {
                     val scope = rememberCoroutineScope()
-                    var text by remember {
-                        mutableStateOf("")
+                    var jobModel by remember {
+                        mutableStateOf<JobData?>(null)
                     }
-                    DriverDetails(text, {
-                        println("getting detail")
-                        scope.launch {
-                            try {
-                                val list= repo.getAllJobs()
-                                text=list.toString()
-                                Log.v("job detail",text)
+                    Column(horizontalAlignment = Alignment.CenterHorizontally) {
+                        Button(onClick = {
+                            scope.launch {
+                                try {
+                                    val list = repo.getAllJobs()
+                                    jobModel = list.first()
+                                    Log.v("job detail", jobModel.toString())
 
-                            }catch (e: Exception){
-                                Log.e("$TAG",e.toString())
+                                } catch (e: Exception) {
+                                    Log.e("$TAG", e.toString())
+                                }
                             }
+                        }) {
+                            Text(text = "Download")
                         }
-                    })
+
+                        jobModel?.let {
+                            DriverDetails(
+                                carId = it.car_id,
+                                driverID = it.driver_id,
+                                text = jobModel.toString(),
+                                estimatedTime = it.estimate_time
+                            )
+                        } ?: CircularProgressIndicator()
+                    }
+
                 }
             }
         }
@@ -71,20 +81,53 @@ class MainActivity : ComponentActivity() {
     }
 }
 
+
 @Composable
-fun DriverDetails(text : String, onDownload: ()-> Unit,  modifier: Modifier = Modifier) {
+fun DriverDetails(
+    driverID: String,
+    carId: String,
+    estimatedTime: Long,
+    text: String,
+    modifier: Modifier = Modifier
+) {
     Column(
         modifier = modifier,
         horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.Center
     ) {
-        Text(text = text)
-        Button(onClick = {
-           onDownload.invoke()
-        }) {
-            Text(text = "Download")
+        Card(
+            elevation = 10.dp, modifier = Modifier
+                .padding(10.dp)
+        ) {
+            Column(
+                horizontalAlignment = Alignment.CenterHorizontally,
+                verticalArrangement = Arrangement.Center
+            ) {
+                Text(
+                    text = "Job Details", modifier = Modifier
+                        .padding(10.dp)
+                )
+                Text(text = text, modifier = Modifier.padding(10.dp))
+                LabelWithText(label = "Driver Id", text = driverID)
+                LabelWithText(label = "Car Id", text = carId)
+
+            }
         }
     }
+}
+
+@Composable
+fun LabelWithText(label: String, text: String) {
+    Column() {
+        Text(text = label, style = MaterialTheme.typography.body2)
+        Spacer(modifier = Modifier.height(4.dp))
+        Text(text = text, style = MaterialTheme.typography.body1)
+    }
+}
+
+@Composable
+fun Loader(){
+    CircularProgressIndicator()
 }
 
 
