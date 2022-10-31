@@ -1,9 +1,9 @@
-package com.example.fleetmanager
+package com.example.fleetmanager.repository.network
 
 import kotlinx.serialization.Serializable
 
 @Serializable
-data class Job(
+data class JobNetworkModel(
     val driver_id:String,
     val car_id:String,
     val lat_start:String,
