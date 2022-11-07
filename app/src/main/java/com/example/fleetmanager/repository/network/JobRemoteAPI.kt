@@ -9,8 +9,9 @@ import io.ktor.client.request.*
 import io.ktor.http.*
 import io.ktor.serialization.kotlinx.json.*
 import kotlinx.serialization.json.Json
+import javax.inject.Inject
 
-class JobRemoteAPI{
+class JobRemoteAPI  @Inject constructor(){
     private val TAG = "JobRemoteAPI"
     val client= HttpClient(){
         install(Logging){

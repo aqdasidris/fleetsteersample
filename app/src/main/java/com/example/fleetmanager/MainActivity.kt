@@ -59,7 +59,10 @@ class MainActivity : ComponentActivity() {
                             DriverDetails(
                                 carId = it.car_id,
                                 driverID = it.driver_id,
-                                text = jobModel.toString(),
+                                lat_start= it.lat_start,
+                                long_start= it.long_start,
+                                lat_end=it.lat_end,
+                                long_end=it.long_end,
                                 estimatedTime = it.estimate_time
                             )
                         } ?: CircularProgressIndicator()
@@ -87,7 +90,10 @@ fun DriverDetails(
     driverID: String,
     carId: String,
     estimatedTime: Long,
-    text: String,
+    lat_start:String,
+    long_start:String,
+    lat_end:String,
+    long_end:String,
     modifier: Modifier = Modifier
 ) {
     Column(
@@ -107,9 +113,13 @@ fun DriverDetails(
                     text = "Job Details", modifier = Modifier
                         .padding(10.dp)
                 )
-                Text(text = text, modifier = Modifier.padding(10.dp))
                 LabelWithText(label = "Driver Id", text = driverID)
                 LabelWithText(label = "Car Id", text = carId)
+                LabelWithText(label = "lat_start", text = lat_start)
+                LabelWithText(label = "Long_start", text = long_start)
+                LabelWithText(label = "lat_end", text = lat_end)
+                LabelWithText(label = "long_end", text = long_end)
+                LabelWithText(label = "Estimated time", text = estimatedTime.toString())
 
             }
         }
